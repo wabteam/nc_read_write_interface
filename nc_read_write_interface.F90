@@ -101,6 +101,26 @@ module nc_read_write_interface
     !                      End of Subroutine create_nc
     !---------------------------------------------------------------------
     !---------------------------------------------------------------------
+    !                       Subroutine file_delete
+    !---------------------------------------------------------------------
+    subroutine file_delete (file_name)
+        implicit none
+        character (len = *), intent (in) :: file_name
+
+        logical alive
+
+        inquire (file = file_name, exist = alive)
+        if (alive) then
+            open (11, file = file_name)
+            close (11, status = 'delete')
+        end if
+
+        call check_file_exist (file_name, .false.)
+    end subroutine file_delete
+    !---------------------------------------------------------------------
+    !                   End of Subroutine file_delete
+    !---------------------------------------------------------------------
+    !---------------------------------------------------------------------
     !                          Subroutine read_1dvar
     !---------------------------------------------------------------------
     subroutine read_1dvar (var, file_name, var_name, start_count, volume_count, dim_count, n_d)
@@ -1110,8 +1130,8 @@ module nc_read_write_interface
     !---------------------------------------------------------------------
     subroutine check_file_exist (file_name, t_or_f)
         implicit none
-        character (len = *),    intent (in)         ::  file_name
         logical, optional,      intent (in)         ::  t_or_f
+        character (len = *),    intent (in)         ::  file_name
 
         logical alive
 
@@ -1131,36 +1151,16 @@ module nc_read_write_interface
     !                      End of Subroutine check_file_exist
     !---------------------------------------------------------------------
     !---------------------------------------------------------------------
-    !                       Subroutine file_delete
-    !---------------------------------------------------------------------
-    subroutine file_delete (file_name)
-        implicit none
-        character (len = *), intent (in) :: file_name
-
-        logical alive
-
-        inquire (file = file_name, exist = alive)
-        if (alive) then
-            open (11, file = file_name)
-            close (11, status = 'delete')
-        end if
-
-        call check_file_exist (file_name, .false.)
-    end subroutine file_delete
-    !---------------------------------------------------------------------
-    !                   End of Subroutine file_delete
-    !---------------------------------------------------------------------
-    !---------------------------------------------------------------------
     !                       Subroutine handle_err
     !---------------------------------------------------------------------
-     subroutine handle_err (ierr)
+    subroutine handle_err (ierr)
         integer, intent(in) :: ierr
 
         if (ierr /= nf90_noerr) then
             write (6,*) trim (nf90_strerror (ierr))
             stop "Stopped"
         end if
-     end subroutine handle_err
+    end subroutine handle_err
     !---------------------------------------------------------------------
     !                   End of Subroutine handle_err
     !---------------------------------------------------------------------
